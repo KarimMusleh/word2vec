@@ -13,7 +13,7 @@ def get_page_content_and_links(title):
     return text, links
 
 # Create a dataset from a Wikipedia page, given a certain depth
-def create_wikipedia_dataset(start_title, depth=1):
+def create_wikipedia_dataset(start_title, depth=1, max_width=100):
     pages_scraped = set()  # To avoid visiting the same page twice
     dataset = []
 
@@ -23,7 +23,7 @@ def create_wikipedia_dataset(start_title, depth=1):
     for d in range(-1,depth):
         next_pages_to_scrape = []
         i = 0
-        while len(dataset) < 500 and i < len(pages_to_scrape):
+        while len(dataset) < max_width and i < len(pages_to_scrape):
             page_title = pages_to_scrape[i]
             i += 1
             if page_title not in pages_scraped:
@@ -36,18 +36,14 @@ def create_wikipedia_dataset(start_title, depth=1):
         # Prepare for the next depth layer
         pages_to_scrape = next_pages_to_scrape
 
-    print(*dataset)
     return dataset
 
 # Usage example
-main_title = "Machine learning"  # This is the title of the Wikipedia page
-small_dataset = create_wikipedia_dataset(main_title, depth=1)  # 1-level deep
-# big_dataset = create_wikipedia_dataset(main_title, depth=2)  # 2-level deep
+main_title = "philosophy"  # This is the title of the Wikipedia page
+dataset = create_wikipedia_dataset(main_title, depth=1, max_width=200)  # 1-level deep
 
 # Save datasets to files if needed
-with open('dataset.txt', 'w') as f:
-    f.write('\n'.join(small_dataset))
+with open('phil_dataset.txt', 'w') as f:
+    curr = f.write('\n__WIKI__'.join(dataset))
 
-# with open('big_dataset.txt', 'w') as f:
-    # f.write('\n'.join(big_dataset))
 
