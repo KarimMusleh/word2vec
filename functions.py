@@ -34,3 +34,46 @@ def remove_braces(text):
     print(prev, prev_line)
     print(between[:4000].encode())
     return ''.join(result)
+
+def filter_dataset(dataset):
+    # I may have filtered too hard
+    # I removed everything between braces because that's just LateX I tried using regex but couldn't get it to work
+    # Then I removed empty lines and lines that don't start with an upper case (removing this results in a bunch of random letters in the dataset)
+    filtered_dataset = dataset
+    # print(f'The dataset is size {len(filtered_dataset)} without filtering')
+    # with open('latex.txt', 'w') as w: # use this to test wether it removes too much or too little
+    #     w.write(''.join(re.findall(r' {6}\n {8}.*?(?:\\displaystyle|\\textstyle).*?\n', filtered_dataset, flags=re.DOTALL)))
+    filtered_dataset = re.sub(r' {8}.*?(?:\\displaystyle|\\textstyle).*?\n', '', filtered_dataset, flags=re.DOTALL) # We lowercase the data and remove the LateX
+    # print(f'The dataset is size {len(filtered_dataset)} without the LaTeX')
+    # print(f"There are currently {len(re.findall(r'displaystyle', filtered_dataset))} LaTeX blocks that have to be manually deleted")
+    # filtered_dataset = '\n'.join([line for line in filtered_dataset.splitlines() if line.strip()]) #  and line[0].isupper() and len(line) > 30
+    # print(len(filter_dataset))
+    filtered_dataset = re.sub(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)', '', filtered_dataset)
+    # print(f'The dataset is size {len(filtered_dataset)} without the links')
+    # I found the regex above here https://regexr.com/37i6s
+    return filtered_dataset
+
+
+def filter_dataset(dataset):
+    dataset = '\n'.join(dataset.splitlines()[:1000])[::-1]
+    i = 0
+    filtered_dataset = ''
+    dataset = dataset.splitlines()
+    while i < len(dataset):
+        # print(1, data.rstrip()[::-1])
+        if dataset[i].rstrip().endswith('elytsyalpsid\\{'):
+            between = dataset[i]
+            i += 1
+            while not re.findall(r'[A-Z]$', dataset[i], flags=re.MULTILINE):
+                between += '\n' + dataset[i]
+                i += 1
+            if not filtered_dataset.endswith('\n\n'):
+                print("NOT NN")
+            else:
+                filtered_dataset = filtered_dataset.removesuffix('\n\n')
+            print(between.encode()[::-1])
+        else:
+            filtered_dataset += dataset[i] + '\n'
+        i += 1
+    # return filtered_dataset[::-1]
+
