@@ -7,6 +7,6 @@ I still haven't found the ultimate wikipedia LaTeX remover, but the following re
 
 TODO
 - Create a better regex to remove the LaTeX from the dataset (probably can use the fact that every non-LaTeX line begins with a capital letter)
-- Train a model :)
+- [x] Train a model :)
 - Find a better tokenizer that isn't PunktSentenceTokenizer from nltk (it's possible that this isn't needed and that improving filtering will solve the problem)
 
