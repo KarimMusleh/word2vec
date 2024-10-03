@@ -1,0 +1,2 @@
+MODELS_DIR='../models/'
+EMBEDDING_SIZE=10

@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import numpy as np # To my understanding this is recommended for preprocessing data rather than pytorch
+from constants import EMBEDDING_SIZE
 
 class SG_Dataset(Dataset):
     """A dataset for training the skipgram model. Given a center word it has to give a probability distribution for the context words"""
@@ -35,8 +36,10 @@ def get_sg_dataloader(ids, window_size=2, batch_size=64):
 
             center.append(ids[j])
             context.append(ids[i])
-    center = np.array(center)
-    context = np.array(context)
+    center = np.stack(center)
+    context = np.stack(context)
+
+    print(f'length of input {len(ids)}, length of training set {len(center)}')
 
     df = pd.DataFrame({'center': center, 'context': context})
     sg_dataset = SG_Dataset(df)
