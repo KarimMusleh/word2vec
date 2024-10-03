@@ -1,4 +1,5 @@
 *-model.pt
 models
 models/*
-.ipynb_checkpoints
+.ipynb_checkpoints/*
+.ipynb_checkpoints/
