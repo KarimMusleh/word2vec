@@ -1,4 +1,4 @@
-# this file is a list of functions that I've written while implementing this paper. They aren't doing exactly what I want them to do.
+# this file is a list of stuff that I've written while implementing this paper. They aren't doing exactly what I want them to do.
 # However I hope they might be useful in the future.
 def remove_braces(text):
     result = []
@@ -77,3 +77,62 @@ def filter_dataset(dataset):
         i += 1
     # return filtered_dataset[::-1]
 
+
+
+
+def ns_sg_dataloader(ids, token_prefix_sum, id2word, window_size=WINDOW_SIZE, batch_size=64, gen=None):
+    from random import randint
+
+
+    vocab_size = len(token_prefix_sum)
+    num_tokens = int(token_prefix_sum[-1])
+
+    center, context = [], []
+    len_ids = len(ids)
+    for i in range(1, len_ids):
+        begin = max(0, i - window_size)
+        for j in range(begin, i):
+            center.append(ids[i])
+            context.append(ids[j])
+            find_neg_samples(ids[i])
+
+            center.append(ids[j])
+            context.append(ids[i])
+            find_neg_samples(ids[j])
+
+    print(list(zip(map(id2word.get, center[:10]),map(lambda x: id2word.get(abs(x)), context[:10]))))
+    center = np.stack(center)
+    context = np.stack(context)
+
+    print(f'length of input {len(ids)}, length of training set {len(center)}')
+
+    sg_dataset = SG_Dataset(center, context)
+    loader = DataLoader(sg_dataset, batch_size=batch_size, shuffle=True, generator=gen)
+    return loader
+
+
+    """returns a DataLoader for trianing a skipgram with negative sampling.
+    If the id of the context is negative that means it's a negative sample, and conversely if it's positive that means it's a positive sample.
+    In the original implementation they created a huge array of size num_tokens and filled it with contiguous blocks of the same token, the blocks were of size P ** (0.75) where P is the number of times that particular token appeared in the training set
+    My implementation uses prefix sums of the token counts, and is more memory efficient but it takes O(log(vocab_size)) to produce one negative sample"""
+
+
+
+
+def simple_filter_tokenize(data: str):
+    """
+    filter and tokenize the input string.
+    filter by lowercasing -> removing punctuation -> removing whitespace -> removing stopwords
+    """
+    tkn = RegexpTokenizer(r'^\w+|\s\w+')
+    filtered_data = data.lower().replace('--', ' ').replace('-', ' ')
+    for sent in filtered_data.split('\n'):
+        re. 
+    filtered_data = re.sub(r'[^a-z]', ' ', filtered_data)
+    filtered_data = re.sub(r'\s+', ' ', filtered_data)
+
+    stops = set(stopwords.words('english'))
+    stops.add('us')
+
+    tokens = [word for word in filtered_data.split(' ') if word and word not in stops]
+    return tokens
