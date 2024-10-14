@@ -57,7 +57,7 @@ class SG_Softmax_Batch_Sampler(Sampler):
                 if idx_in_batch == batch_size:
                     yield batch
                     idx_in_batch = 0
-                    # The line below I found in the pytorch implementation of BatchSampler. It seems to me that it's not necessary
+                    # The line below I found in the pytorch implementation of BatchSampler. It seems redundant.
                     # batch = [0] * self.batch_size
             if idx_in_batch > 0:
                 yield batch[:idx_in_batch]
@@ -67,10 +67,8 @@ class SG_Softmax_Batch_Sampler(Sampler):
 def sm_sg_dataloader(id_sents, id2word, window_size=WINDOW_SIZE, batch_size=60, gen=None):
     """
     A DataLoader for Skipgram with Softmax at the end.
-    This implementation is very hacky, it splits the training data into two parts:
-    1) Tokens that have window_size * 2 neighboring tokens.
-    2) Tokens that don't.
-    During training one has to train on both of them seperately.
+    This implementation is hacky, it splits the training data depending on the number of neighbors that each word has.
+    It then combines them into one DataSet and samples from it using the linear batch sampler SG_Softmax_Batch_Sampler.
     The biggest benefit of this implementation is that it saves memory by storing the center token only once.
     """
     centers, contexts = [], []

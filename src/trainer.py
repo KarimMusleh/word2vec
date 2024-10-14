@@ -1,7 +1,7 @@
 from dataloader import sm_sg_dataloader, ns_sg_dataloader
 from models import Skipgram_SM, Skipgram_NS
 import torch
-from torch.nn.functional import one_hot
+from torch.nn.functional import one_hot, cross_entropy
 from torch import optim
 from torch import nn
 from collections import Counter
@@ -14,13 +14,26 @@ from itertools import chain
 gen = torch.manual_seed(42)
 
 class Trainer:
-    def __init__(self):
+    def __init__(
+        self,
+        model,
+        epochs,
+        dataloader,
+        lr,
+        ):
         pass
-         
 
+def sm_skipgram_cross_entropy(preds, target):
+    batch_size, context_len = y.shape
+    loss = 0
+    for i in range(context_len):
+        loss += cross_entropy(preds, y[:,i], reduction='sum') # we don't have to onehot encode y, cross_entropy does it for us
+    # We have to find the loss ourselves because the batches don't all have the same shape
+    return loss / (batch_size * context_size) 
+     
 
 def main():
-    sm_skipgram()
+    ns_skipgram()
 
 def sm_skipgram():
     """Train a Skipgram model like was explained in the first paper by Mikolov et.al."""
@@ -55,7 +68,7 @@ def sm_skipgram():
     model = Skipgram_SM(vocab_size, EMBEDDING_SIZE)
     model.to(device)
     lr = 0.025 
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = sm_skipgram_cross_entropy
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     epochs = 300
@@ -65,12 +78,9 @@ def sm_skipgram():
         for X, y in dataloader:
             X = X.to(device)
             y = y.to(device)
-            context_len = y.shape[-1]
             optimizer.zero_grad()
             preds = model(X)
-            loss = 0
-            for i in range(context_len):
-                loss += loss_fn(preds, y[:,i]) # we don't have to onehot encode y nn.CrossEntropyLoss does it for us
+            loss = loss_fn(preds, y)
             running_loss += loss.item()
             loss.backward()
             optimizer.step()
@@ -147,7 +157,6 @@ def ns_skipgram():
     torch.save(model.state_dict(), MODELS_DIR + 'shakespeare-10-30.pl')
 
 
-    
 if __name__ == '__main__':
     main()
 

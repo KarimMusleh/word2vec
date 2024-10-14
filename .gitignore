@@ -3,3 +3,4 @@ models
 models/*
 .ipynb_checkpoints/*
 .ipynb_checkpoints/
+src/__pycache__
