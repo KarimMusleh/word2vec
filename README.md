@@ -10,3 +10,12 @@ TODO
 - [x] Train a model :)
 - Find a better tokenizer that isn't PunktSentenceTokenizer from nltk (it's possible that this isn't needed and that improving filtering will solve the problem)
 
+## Changes From the Original
+I've read some of the [original implementation in C](https://github.com/tmikolov/word2vec), and I've changed some of the implementation details which resulted in a more memory efficient program. Specifically I changed two things:
+- I've grouped 
+- For negative sampling I implemented a prefix 
+
+
+## Stuff I learned
+- Understood the `DataLoader` api better and implemented `SG_Softmax_Batch_Sampler` for a `CumulativeDataset`.
+- 
